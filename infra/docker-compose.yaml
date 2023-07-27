@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+
+  db:
+    container_name: db
+    hostname: db
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+
+  migrate_and_collectstatic:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    volumes:
+      - static_value:/app/backend_static/
+      - media_value:/app/backend_media/
+    command: sh -c "python manage.py migrate --noinput && python manage.py collectstatic"
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+
+
+  api:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - static_value:/app/backend_static/
+      - media_value:/app/backend_media/
+    links:
+      - db
+    depends_on:
+      - migrate_and_collectstatic
+    env_file:
+      - ./.env
+
+
+volumes:
+  static_value:
+  media_value:
+  postgres_data:
