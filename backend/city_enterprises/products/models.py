@@ -39,9 +39,11 @@ class Product(models.Model):
 
 
 class ProductPrice(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт', )
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, verbose_name='Продукт',)
     enterprise = models.ForeignKey(
         Enterprise, on_delete=models.CASCADE, verbose_name='Предприятие',
+        related_name='products_prices'
     )
     price = models.DecimalField(
         max_digits=10, decimal_places=2, validators=[MinValueValidator(1)]

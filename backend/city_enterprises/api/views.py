@@ -9,9 +9,6 @@ from .viewsets import ListRetrieveViewSet, CreateRetrieveViewSet
 
 
 class EnterpriseCityDistrictViewSet(ListRetrieveViewSet):
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-    filterset_class = CategoryFilter
-    # search_fields = ('^products__name', )
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

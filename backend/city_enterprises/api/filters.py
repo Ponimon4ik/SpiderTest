@@ -14,8 +14,15 @@ from products.models import Product
 
 class CategoryFilter(FilterSet):
 
-    category = AllValuesFilter(field_name='products__category__slug')
+    category = CharFilter(method='get_category')
 
+    def get_category(self, queryset, name, value):
+        queryset = queryset.filter(products__category__slug=value).distinct()
+        return queryset
+
+    # def filter_queryset(self, queryset):
+
+        # return queryset.filter()
     # class Meta:
     #     model = Product
     #     fields = ['category', ]
@@ -25,7 +32,3 @@ class CategoryFilter(FilterSet):
     #     query_set = super().qs()
     #     return
 
-    #
-    #
-    # def filter_queryset(self, queryset):
-    #     ...
