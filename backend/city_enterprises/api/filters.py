@@ -1,34 +1,28 @@
-from django.contrib.postgres.search import TrigramSimilarity
+from django.contrib.postgres.search import TrigramSimilarity, TrigramWordSimilarity
 from django.db.models.functions import Greatest
-from rest_framework import filters
 from rest_framework.filters import SearchFilter
-from rest_framework.settings import api_settings
-from django.utils.translation import gettext_lazy as _
 
-from django_filters import FilterSet, CharFilter, ModelMultipleChoiceFilter, AllValuesFilter
 
-from categories.models import Category
-from enterprises.models import Enterprise
-from products.models import Product
+from django_filters import FilterSet, CharFilter
 
 
 class CategoryFilter(FilterSet):
 
-    category = CharFilter(method='get_category')
+    category = CharFilter(field_name='products__category__slug')
 
-    def get_category(self, queryset, name, value):
-        queryset = queryset.filter(products__category__slug=value).distinct()
-        return queryset
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        return queryset.distinct()
 
-    # def filter_queryset(self, queryset):
 
-        # return queryset.filter()
-    # class Meta:
-    #     model = Product
-    #     fields = ['category', ]
-    #
-    # @property
-    # def qs(self):
-    #     query_set = super().qs()
-    #     return
+class ProductSearchFilter(SearchFilter):
 
+    def filter_queryset(self, request, queryset, view):
+        search_terms = self.get_search_terms(request)
+        if not search_terms:
+            return queryset
+        search_fields = self.get_search_fields(view, request)
+        queryset = queryset.annotate(
+            similarity=TrigramWordSimilarity(' '.join(search_terms), search_fields[0])
+        ).filter(similarity__gte=0.3).order_by('id')
+        return queryset.distinct('id')

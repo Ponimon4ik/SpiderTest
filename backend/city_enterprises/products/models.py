@@ -10,11 +10,12 @@ NOT_MATCH_NETWORK = 'Предприятие должно принадлежат�
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Название')
+    name = models.CharField(max_length=50, verbose_name='Название')
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, related_name='products',
         verbose_name='Категория'
     )
+    # description = models.TextField(max_length=100, verbose_name='Описание', null=True, blank=True)
     enterprise_network = models.ForeignKey(
         EnterpriseNetwork, on_delete=models.CASCADE, related_name='products',
         verbose_name='Сеть'
@@ -40,7 +41,7 @@ class Product(models.Model):
 
 class ProductPrice(models.Model):
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, verbose_name='Продукт',)
+        Product, on_delete=models.CASCADE, verbose_name='Продукт', related_name='products_prices')
     enterprise = models.ForeignKey(
         Enterprise, on_delete=models.CASCADE, verbose_name='Предприятие',
         related_name='products_prices'
