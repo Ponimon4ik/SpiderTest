@@ -15,7 +15,7 @@ class Product(models.Model):
         Category, on_delete=models.CASCADE, related_name='products',
         verbose_name='Категория'
     )
-    # description = models.TextField(max_length=100, verbose_name='Описание', null=True, blank=True)
+    description = models.TextField(max_length=100, verbose_name='Описание', null=True, blank=True)
     enterprise_network = models.ForeignKey(
         EnterpriseNetwork, on_delete=models.CASCADE, related_name='products',
         verbose_name='Сеть'

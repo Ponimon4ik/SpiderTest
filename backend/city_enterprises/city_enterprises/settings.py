@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django.contrib.postgres',
+    'rest_framework.authtoken',
     'django_filters',
     'api.apps.ApiConfig',
     'categories.apps.CategoriesConfig',
@@ -82,13 +83,9 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': os.getenv('POSTGRES_HOST', default='db'),
+        'HOST': os.getenv('POSTGRES_HOST', default='localhost'),
         'PORT': os.getenv('POSTGRES_PORT', default='5432'),
     }
-    # 'default': {
-    #         'ENGINE': 'django.db.backends.sqlite3',
-    #         'NAME': BASE_DIR / 'db.sqlite3'
-    #     }
 }
 
 
@@ -110,6 +107,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
