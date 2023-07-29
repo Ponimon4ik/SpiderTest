@@ -1,5 +1,4 @@
 from django.contrib.postgres.search import TrigramWordSimilarity
-
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -36,7 +35,10 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         product_prices = data.get('prices', ())
         for product_price in product_prices:
-            if product_price['enterprise'].enterprise_network != data.get('enterprise_network'):
+            if (
+                product_price['enterprise'].enterprise_network !=
+                data.get('enterprise_network')
+            ):
                 raise serializers.ValidationError(NOT_MATCH_NETWORK)
         return data
 
@@ -45,7 +47,9 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         product = Product.objects.create(**validated_data)
         for product_price in product_prices:
             ProductPrice.objects.create(
-                product=product, enterprise=product_price['enterprise'], price=product_price['price']
+                product=product,
+                enterprise=product_price['enterprise'],
+                price=product_price['price']
             )
         return product
 
@@ -76,8 +80,14 @@ class ProductReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'name', 'category', 'enterprise_network', 'description', 'prices')
-        read_only_fields = ('id', 'name', 'category', 'enterprise_network', 'description', 'prices')
+        fields = (
+            'id', 'name', 'category',
+            'enterprise_network', 'description', 'prices'
+        )
+        read_only_fields = (
+            'id', 'name', 'category',
+            'enterprise_network', 'description', 'prices'
+        )
 
 
 class EnterpriseProductReadSerializer(serializers.ModelSerializer):
@@ -94,16 +104,24 @@ class EnterpriseProductReadSerializer(serializers.ModelSerializer):
 
 class EnterpriseReadSerializer(serializers.ModelSerializer):
 
-    enterprise_network = serializers.ReadOnlyField(source='enterprise_network.name',)
-    products = EnterpriseProductReadSerializer(source='products_prices', many=True)
+    enterprise_network = serializers.ReadOnlyField(
+        source='enterprise_network.name'
+    )
+    products = EnterpriseProductReadSerializer(
+        source='products_prices', many=True
+    )
     districts = serializers.SlugRelatedField(
         slug_field='name', queryset=CityDistrict.objects.all(), many=True
     )
 
     class Meta:
         model = Enterprise
-        fields = ('id', 'name', 'enterprise_network', 'districts', 'products')
-        read_only_fields = ('id', 'name', 'enterprise_network', 'districts', 'products')
+        fields = (
+            'id', 'name', 'enterprise_network', 'districts', 'products'
+        )
+        read_only_fields = (
+            'id', 'name', 'enterprise_network', 'districts', 'products'
+        )
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -116,6 +134,7 @@ class EnterpriseReadSerializer(serializers.ModelSerializer):
             products = products.annotate(
                 similarity=TrigramWordSimilarity(search_term, 'product__name')
             ).filter(similarity__gte=0.3).order_by('id')
-        representation['products'] = EnterpriseProductReadSerializer(products, many=True).data
+        representation['products'] = EnterpriseProductReadSerializer(
+            products, many=True
+        ).data
         return representation
-

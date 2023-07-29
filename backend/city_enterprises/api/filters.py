@@ -1,5 +1,4 @@
-from django.contrib.postgres.search import TrigramSimilarity, TrigramWordSimilarity
-from django.db.models.functions import Greatest
+from django.contrib.postgres.search import TrigramWordSimilarity
 from rest_framework.filters import SearchFilter
 
 
@@ -23,6 +22,8 @@ class ProductSearchFilter(SearchFilter):
             return queryset
         search_fields = self.get_search_fields(view, request)
         queryset = queryset.annotate(
-            similarity=TrigramWordSimilarity(' '.join(search_terms), search_fields[0])
+            similarity=TrigramWordSimilarity(
+                ' '.join(search_terms), search_fields[0]
+            )
         ).filter(similarity__gte=0.3).order_by('id')
         return queryset.distinct('id')

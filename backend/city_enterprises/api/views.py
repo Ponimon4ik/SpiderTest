@@ -1,11 +1,14 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
 
-from enterprises.models import Enterprise
+from districts.models import CityDistrict
 from products.models import Product
 from .filters import ProductSearchFilter, CategoryFilter
-from .serializers import EnterpriseReadSerializer, ProductReadSerializer, ProductCreateSerializer
+from .serializers import (
+    EnterpriseReadSerializer, ProductReadSerializer, ProductCreateSerializer
+)
 from .viewsets import CreateRetrieveViewSet
-from rest_framework import viewsets
 
 
 class EnterpriseCityDistrictViewSet(viewsets.ReadOnlyModelViewSet):
@@ -15,9 +18,13 @@ class EnterpriseCityDistrictViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = EnterpriseReadSerializer
 
     def get_queryset(self):
-        district_id = self.kwargs['district_id']
-        queryset = Enterprise.objects.filter(districts__id=district_id)
-        return queryset
+        if getattr(self, 'swagger_fake_view', False):
+            # queryset just for schema generation metadata
+            return CityDistrict.objects.none()
+        district = get_object_or_404(
+            CityDistrict, id=self.kwargs.get('district_id')
+        )
+        return district.enterprises.all()
 
 
 class ProductViewSet(CreateRetrieveViewSet):

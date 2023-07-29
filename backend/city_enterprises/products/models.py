@@ -6,7 +6,9 @@ from categories.models import Category
 from enterprises.models import Enterprise, EnterpriseNetwork
 
 
-NOT_MATCH_NETWORK = 'Предприятие должно принадлежать той же сети, что и продукт.'
+NOT_MATCH_NETWORK = (
+    'Предприятие должно принадлежать той же сети, что и продукт.'
+)
 
 
 class Product(models.Model):
@@ -15,7 +17,9 @@ class Product(models.Model):
         Category, on_delete=models.CASCADE, related_name='products',
         verbose_name='Категория'
     )
-    description = models.TextField(max_length=100, verbose_name='Описание', null=True, blank=True)
+    description = models.TextField(
+        max_length=100, verbose_name='Описание', null=True, blank=True
+    )
     enterprise_network = models.ForeignKey(
         EnterpriseNetwork, on_delete=models.CASCADE, related_name='products',
         verbose_name='Сеть'
@@ -36,12 +40,17 @@ class Product(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.name}, {self.category.name}, {self.enterprise_network.name}'
+        return (
+            f'{self.name}, {self.category.name}, '
+            f'{self.enterprise_network.name}'
+        )
 
 
 class ProductPrice(models.Model):
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, verbose_name='Продукт', related_name='products_prices')
+        Product, on_delete=models.CASCADE,
+        verbose_name='Продукт', related_name='products_prices'
+    )
     enterprise = models.ForeignKey(
         Enterprise, on_delete=models.CASCADE, verbose_name='Предприятие',
         related_name='products_prices'
@@ -63,7 +72,10 @@ class ProductPrice(models.Model):
 
     def clean(self):
         super().clean()
-        if self.product.enterprise_network != self.enterprise.enterprise_network:
+        if (
+            self.product.enterprise_network !=
+            self.enterprise.enterprise_network
+        ):
             raise ValidationError(NOT_MATCH_NETWORK)
 
     def save(self, *args, **kwargs):

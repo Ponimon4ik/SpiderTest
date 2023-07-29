@@ -18,10 +18,12 @@ class EnterpriseNetwork(models.Model):
 class Enterprise(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название')
     enterprise_network = models.ForeignKey(
-        EnterpriseNetwork, on_delete=models.CASCADE, related_name='enterprises',
-        verbose_name='Сеть'
+        EnterpriseNetwork, on_delete=models.CASCADE,
+        related_name='enterprises', verbose_name='Сеть'
     )
-    districts = models.ManyToManyField(CityDistrict, related_name='enterprises')
+    districts = models.ManyToManyField(
+        CityDistrict, related_name='enterprises'
+    )
 
     class Meta:
         verbose_name = 'Предприятие'
