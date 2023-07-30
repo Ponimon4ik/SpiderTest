@@ -34,7 +34,7 @@ touch .env
 ```
 ```
 SECRET_KEY='django-insecure-x)b42fn*!l$w&#4v7@5a-58hp75yk95&$=zf-3@$$%b34kz22q'
-DEBUG_STATUS=False
+DEBUG_STATUS=0
 ALLOWED_HOSTS=*
 
 DB_ENGINE=django.db.backends.postgresql
