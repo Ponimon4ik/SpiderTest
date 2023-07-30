@@ -1,4 +1,3 @@
-from factory import Faker, SubFactory
 import factory
 
 from categories.models import Category
@@ -11,22 +10,22 @@ class CityDistrictFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = CityDistrict
 
-    name = Faker('street_address')
+    name = factory.Faker('street_address')
 
 
 class CategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Category
 
-    name = Faker('word')
-    slug = Faker('slug')
+    name = factory.Faker('word')
+    slug = factory.Faker('slug')
 
 
 class EnterpriseNetworkFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = EnterpriseNetwork
 
-    name = Faker('company')
+    name = factory.Faker('company')
 
 
 class EnterpriseFactory(factory.django.DjangoModelFactory):
@@ -34,8 +33,8 @@ class EnterpriseFactory(factory.django.DjangoModelFactory):
         model = Enterprise
         skip_postgeneration_save = True
 
-    name = Faker('company')
-    enterprise_network = SubFactory(EnterpriseNetworkFactory)
+    name = factory.Faker('company')
+    enterprise_network = factory.SubFactory(EnterpriseNetworkFactory)
 
     @factory.post_generation
     def districts(self, create, extracted, **kwargs):
@@ -50,18 +49,21 @@ class ProductFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Product
 
-    name = Faker('word')
-    category = SubFactory(CategoryFactory)
-    enterprise_network = SubFactory(EnterpriseNetworkFactory)
+    name = factory.Sequence(lambda n: 'product{}'.format(n))
+    category = factory.SubFactory(CategoryFactory)
+    enterprise_network = factory.SubFactory(EnterpriseNetworkFactory)
 
 
 class ProductPriceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ProductPrice
 
-    product = SubFactory(ProductFactory)
-    enterprise = SubFactory(EnterpriseFactory)
-    price = Faker('pydecimal', right_digits=2, positive=True, min_value=1, max_value=1000000)
+    product = factory.SubFactory(ProductFactory)
+    enterprise = factory.SubFactory(EnterpriseFactory)
+    price = factory.Faker(
+        'pydecimal', right_digits=2, positive=True,
+        min_value=1, max_value=1000000
+    )
 
 
 pytest_plugins = [

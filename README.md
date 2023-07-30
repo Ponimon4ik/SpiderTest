@@ -65,7 +65,7 @@ docker-compose exec web python3 manage.py loaddata fixtures.json
 
 ### Документация к API:
 
-Документация к API доступна по адресу http://localhost:8000/swagger/
+Документация к API доступна по адресу http://localhost/api/v1/swagger/
 
 ### Как запустить тесты к API:
 
