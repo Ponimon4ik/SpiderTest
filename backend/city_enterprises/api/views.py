@@ -14,7 +14,7 @@ from .viewsets import CreateRetrieveViewSet
 class EnterpriseCityDistrictViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, ProductSearchFilter)
     filterset_class = CategoryFilter
-    search_fields = ('products__name',)
+    search_fields = ('product__name', )
     serializer_class = EnterpriseReadSerializer
 
     def get_queryset(self):

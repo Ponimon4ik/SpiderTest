@@ -122,19 +122,3 @@ class EnterpriseReadSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'id', 'name', 'enterprise_network', 'districts', 'products'
         )
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        search_term = self.context['request'].query_params.get('search')
-        category_slug = self.context['request'].query_params.get('category')
-        products = instance.products_prices
-        if category_slug:
-            products = products.filter(product__category__slug=category_slug)
-        if search_term:
-            products = products.annotate(
-                similarity=TrigramWordSimilarity(search_term, 'product__name')
-            ).filter(similarity__gte=0.3).order_by('id')
-        representation['products'] = EnterpriseProductReadSerializer(
-            products, many=True
-        ).data
-        return representation
